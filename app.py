@@ -93,7 +93,7 @@ def init_session():
 def setup_sidebar():
     with st.sidebar:
         st.image("https://images.pexels.com/lib/api/pexels-white.png", width=150)
-        st.title("Pexels Explorer")
+        st.title("VidVoyager")
         st.markdown("---")
         
         api_key = st.text_input("🔑 API Key", type="password", 
@@ -105,7 +105,7 @@ def setup_sidebar():
                 st.write("No searches yet")
             else:
                 for i, query in enumerate(st.session_state.search_history[-5:]):
-                    if st.button(f"{query}", key=f"hist_{i}"):
+                    if st.button(f"{query}", key=f"hist_{i}_{query[:10]}"):  # Added query snippet to key
                         st.session_state.last_search = query
         
         with st.expander("❤️ Favorites"):
@@ -120,16 +120,19 @@ def setup_sidebar():
         orientation = st.selectbox(
             "Orientation", 
             ["Any", "Portrait", "Landscape", "Square"],
-            index=0
+            index=0,
+            key="sidebar_orientation"  # Added unique key
         )
         size = st.selectbox(
             "Size", 
             ["Any", "Large (4K)", "Medium (HD)", "Small (SD)"],
-            index=0
+            index=0,
+            key="sidebar_size"  # Added unique key
         )
         min_duration = st.slider(
             "Minimum Duration (seconds)", 
-            0, 60, 5
+            0, 60, 5,
+            key="sidebar_duration"  # Added unique key
         )
         
         st.markdown("---")
@@ -147,7 +150,7 @@ def setup_sidebar():
             "min_duration": min_duration
         }
 
-# Video card component
+# Video card component with unique keys
 def video_card(video, index):
     with st.container():
         st.markdown(f"<div class='video-card'>", unsafe_allow_html=True)
@@ -156,7 +159,7 @@ def video_card(video, index):
         with col1:
             st.subheader(f"Video #{index + 1}")
         with col2:
-            if st.button("⭐", key=f"fav_{video['id']}"):
+            if st.button("⭐", key=f"fav_{video['id']}_{index}"):  # Added index to key
                 if video['id'] not in st.session_state.favorites:
                     st.session_state.favorites[video['id']] = {
                         "title": video.get('user', {}).get('name', 'Unknown'),
@@ -180,22 +183,22 @@ def video_card(video, index):
             
             cols = st.columns(3)
             with cols[0]:
-                st.metric("Duration", f"{video['duration']}s")
+                st.metric("Duration", f"{video['duration']}s", key=f"dur_{video['id']}")
             with cols[1]:
-                st.metric("Dimensions", f"{video['width']}×{video['height']}")
+                st.metric("Dimensions", f"{video['width']}×{video['height']}", key=f"dim_{video['id']}")
             with cols[2]:
-                st.metric("Quality", best_video['quality'].upper())
+                st.metric("Quality", best_video['quality'].upper(), key=f"qual_{video['id']}")
             
             st.caption(f"By: {video.get('user', {}).get('name', 'Unknown')}")
             
             with st.expander("Download Options"):
-                for vf in video_files[:3]:  # Show top 3 quality options
+                for i, vf in enumerate(video_files[:3]):  # Show top 3 quality options
                     st.download_button(
                         label=f"Download {vf['width']}×{vf['height']} ({vf['quality']})",
                         data=requests.get(vf['link']).content,
                         file_name=f"pexels_{video['id']}_{vf['quality']}.mp4",
                         mime="video/mp4",
-                        key=f"dl_{video['id']}_{vf['quality']}"
+                        key=f"dl_{video['id']}_{vf['quality']}_{i}"  # Added index to ensure uniqueness
                     )
         
         st.markdown("</div>", unsafe_allow_html=True)
@@ -205,7 +208,7 @@ def main():
     inject_css()
     init_session()
     
-    st.title("🌿 Pexels Video Explorer")
+    st.title("🌿 VidVoyager")
     st.markdown("Discover high-quality stock videos for your projects")
     
     # Setup sidebar and get filters
@@ -221,12 +224,13 @@ def main():
         query = st.text_input(
             "Search videos", 
             value=st.session_state.get('last_search', 'nature'),
-            placeholder="Try 'forest' or 'business'..."
+            placeholder="Try 'forest' or 'business'...",
+            key="main_search_input"  # Added unique key
         )
     with col2:
-        per_page = st.selectbox("Results", [5, 10, 15, 20], index=0)
+        per_page = st.selectbox("Results", [5, 10, 15, 20], index=0, key="results_per_page")
     
-    if st.button("Search", type="primary") or query:
+    if st.button("Search", type="primary", key="main_search_button") or query:
         if query and query not in st.session_state.search_history:
             st.session_state.search_history.append(query)
         
@@ -263,7 +267,6 @@ def main():
                     for i, video in enumerate(videos):
                         video_card(video, i)
                     
-                    # Pagination would go here in a more advanced version
             else:
                 st.error(f"API Error: {response.status_code} - {response.text}")
         
