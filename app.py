@@ -2,74 +2,82 @@ import streamlit as st
 import requests
 from datetime import datetime
 
-# Custom CSS injection
+# Custom CSS injection with dark sidebar and professional interface
 def inject_css():
     st.markdown("""
     <style>
         :root {
-            --primary: #2e8b57;
-            --secondary: #3a5a40;
-            --accent: #588157;
-            --light: #dad7cd;
-            --dark: #344e41;
+            --sidebar-dark: #1a1a2e;
+            --sidebar-accent: #16213e;
+            --main-bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #f8f9fa;
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
         }
         
         .stApp {
-            background-color: #f8f9fa;
+            background-color: var(--main-bg);
         }
         
+        /* Dark sidebar */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, var(--sidebar-dark), var(--sidebar-accent)) !important;
+        }
+        
+        /* Sidebar text */
+        [data-testid="stSidebar"] * {
+            color: var(--text-light) !important;
+        }
+        
+        /* Sidebar inputs */
+        [data-testid="stSidebar"] .stTextInput input,
+        [data-testid="stSidebar"] .stSelectbox select {
+            background-color: rgba(255,255,255,0.1) !important;
+            color: white !important;
+            border-color: rgba(255,255,255,0.3) !important;
+        }
+        
+        /* Main content area */
+        .main .block-container {
+            background-color: var(--main-bg);
+        }
+        
+        /* Video cards */
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        /* Headers */
         h1, h2, h3, h4, h5, h6 {
-            color: var(--dark) !important;
-            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-dark) !important;
         }
         
-        .stTextInput>div>div>input, 
-        .stSelectbox>div>div>select,
-        .stSlider>div>div>div>div {
-            border: 1px solid var(--accent) !important;
-            border-radius: 8px !important;
-        }
-        
+        /* Buttons */
         .stButton>button {
             background-color: var(--primary) !important;
             color: white !important;
             border-radius: 8px !important;
             padding: 8px 16px !important;
-            border: none !important;
             transition: all 0.3s ease;
         }
         
         .stButton>button:hover {
             background-color: var(--secondary) !important;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        .video-card {
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .video-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-        
-        .sidebar .sidebar-content {
-            background: linear-gradient(180deg, var(--light), white);
-        }
-        
-        .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: var(--dark);
-            font-size: 0.9em;
-            text-align: center;
+        /* Metrics */
+        [data-testid="metric-container"] {
+            background-color: rgba(79, 70, 229, 0.1) !important;
+            border-radius: 8px;
+            padding: 8px;
         }
     </style>
     """, unsafe_allow_html=True)
