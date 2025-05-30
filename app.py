@@ -105,7 +105,7 @@ def setup_sidebar():
                 st.write("No searches yet")
             else:
                 for i, query in enumerate(st.session_state.search_history[-5:]):
-                    if st.button(f"{query}", key=f"hist_{i}_{query[:10]}"):  # Added query snippet to key
+                    if st.button(f"{query}", key=f"hist_{i}_{query[:10]}"):
                         st.session_state.last_search = query
         
         with st.expander("❤️ Favorites"):
@@ -121,18 +121,18 @@ def setup_sidebar():
             "Orientation", 
             ["Any", "Portrait", "Landscape", "Square"],
             index=0,
-            key="sidebar_orientation"  # Added unique key
+            key="sidebar_orientation"
         )
         size = st.selectbox(
             "Size", 
             ["Any", "Large (4K)", "Medium (HD)", "Small (SD)"],
             index=0,
-            key="sidebar_size"  # Added unique key
+            key="sidebar_size"
         )
         min_duration = st.slider(
             "Minimum Duration (seconds)", 
             0, 60, 5,
-            key="sidebar_duration"  # Added unique key
+            key="sidebar_duration"
         )
         
         st.markdown("---")
@@ -159,7 +159,7 @@ def video_card(video, index):
         with col1:
             st.subheader(f"Video #{index + 1}")
         with col2:
-            if st.button("⭐", key=f"fav_{video['id']}_{index}"):  # Added index to key
+            if st.button("⭐", key=f"fav_{video['id']}_{index}"):
                 if video['id'] not in st.session_state.favorites:
                     st.session_state.favorites[video['id']] = {
                         "title": video.get('user', {}).get('name', 'Unknown'),
@@ -183,22 +183,22 @@ def video_card(video, index):
             
             cols = st.columns(3)
             with cols[0]:
-                st.metric("Duration", f"{video['duration']}s", key=f"dur_{video['id']}")
+                st.metric("Duration", f"{video['duration']}s")  # Removed key parameter
             with cols[1]:
-                st.metric("Dimensions", f"{video['width']}×{video['height']}", key=f"dim_{video['id']}")
+                st.metric("Dimensions", f"{video['width']}×{video['height']}")  # Removed key parameter
             with cols[2]:
-                st.metric("Quality", best_video['quality'].upper(), key=f"qual_{video['id']}")
+                st.metric("Quality", best_video['quality'].upper())  # Removed key parameter
             
             st.caption(f"By: {video.get('user', {}).get('name', 'Unknown')}")
             
             with st.expander("Download Options"):
-                for i, vf in enumerate(video_files[:3]):  # Show top 3 quality options
+                for i, vf in enumerate(video_files[:3]):
                     st.download_button(
                         label=f"Download {vf['width']}×{vf['height']} ({vf['quality']})",
                         data=requests.get(vf['link']).content,
                         file_name=f"pexels_{video['id']}_{vf['quality']}.mp4",
                         mime="video/mp4",
-                        key=f"dl_{video['id']}_{vf['quality']}_{i}"  # Added index to ensure uniqueness
+                        key=f"dl_{video['id']}_{vf['quality']}_{i}"
                     )
         
         st.markdown("</div>", unsafe_allow_html=True)
@@ -225,7 +225,7 @@ def main():
             "Search videos", 
             value=st.session_state.get('last_search', 'nature'),
             placeholder="Try 'forest' or 'business'...",
-            key="main_search_input"  # Added unique key
+            key="main_search_input"
         )
     with col2:
         per_page = st.selectbox("Results", [5, 10, 15, 20], index=0, key="results_per_page")
