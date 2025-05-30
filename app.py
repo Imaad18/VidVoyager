@@ -6,47 +6,65 @@ from datetime import datetime
 def inject_css():
     st.markdown("""
     <style>
+        /* Dynamic theming that adapts to Streamlit's theme */
         :root {
             --sidebar-dark: #1a1a2e;
             --sidebar-accent: #16213e;
-            --main-bg: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-dark: #2d3748;
-            --text-light: #f8f9fa;
+            --sidebar-text: #f8f9fa;
+            --sidebar-input-bg: rgba(255,255,255,0.1);
+            --sidebar-input-border: rgba(255,255,255,0.3);
+            
+            /* Will be overridden by media query */
+            --main-bg: initial;
+            --card-bg: initial;
+            --text-color: initial;
             --primary: #4f46e5;
             --secondary: #7c3aed;
         }
         
-        .stApp {
-            background-color: var(--main-bg);
+        /* Dark mode overrides */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --main-bg: #0e1117;
+                --card-bg: #1e1e1e;
+                --text-color: #f8f9fa;
+            }
         }
         
-        /* Dark sidebar */
+        /* Light mode overrides */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --main-bg: #f5f7fa;
+                --card-bg: #ffffff;
+                --text-color: #2d3748;
+            }
+        }
+        
+        /* Sidebar styling (fixed dark theme) */
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, var(--sidebar-dark), var(--sidebar-accent)) !important;
         }
         
-        /* Sidebar text */
         [data-testid="stSidebar"] * {
-            color: var(--text-light) !important;
+            color: var(--sidebar-text) !important;
         }
         
-        /* Sidebar inputs */
         [data-testid="stSidebar"] .stTextInput input,
-        [data-testid="stSidebar"] .stSelectbox select {
-            background-color: rgba(255,255,255,0.1) !important;
-            color: white !important;
-            border-color: rgba(255,255,255,0.3) !important;
+        [data-testid="stSidebar"] .stSelectbox select,
+        [data-testid="stSidebar"] .stSlider div {
+            background-color: var(--sidebar-input-bg) !important;
+            color: var(--sidebar-text) !important;
+            border-color: var(--sidebar-input-border) !important;
         }
         
-        /* Main content area */
-        .main .block-container {
-            background-color: var(--main-bg);
+        /* Main content area (adapts to theme) */
+        .stApp {
+            background-color: var(--main-bg) !important;
         }
         
-        /* Video cards */
+        /* Cards */
         .video-card {
-            background-color: var(--card-bg);
+            background-color: var(--card-bg) !important;
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 24px;
@@ -54,9 +72,9 @@ def inject_css():
             border: 1px solid rgba(0,0,0,0.05);
         }
         
-        /* Headers */
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--text-dark) !important;
+        /* Text colors */
+        h1, h2, h3, h4, h5, h6, .stMarkdown, .stCaption {
+            color: var(--text-color) !important;
         }
         
         /* Buttons */
